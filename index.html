@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VectorFlow Algo V1-O | Strategy Guide</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #1a252f;
+            --purple: #9b59b6;
+            --orange: #e67e22;
+            --teal: #1abc9c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 0;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Tab Navigation */
+        .tab-container {
+            background: var(--dark);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .tab-buttons {
+            display: flex;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .tab-btn:hover {
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .tab-btn.active {
+            color: white;
+            border-bottom-color: var(--accent);
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .tab-btn.active.strategy-1 {
+            border-bottom-color: var(--accent);
+        }
+        
+        .tab-btn.active.strategy-2 {
+            border-bottom-color: var(--purple);
+        }
+        
+        .tab-btn.active.strategy-3 {
+            border-bottom-color: #e67e22;
+        }
+        
+        .tab-btn.active.strategy-4 {
+            border-bottom-color: #1abc9c;
+        }
+        
+        .tab-btn .icon {
+            font-size: 1.2rem;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Strategy badge colors */
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 15px;
+        }
+        
+        .badge-blue {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .badge-purple {
+            background: var(--purple);
+            color: white;
+        }
+        
+        nav {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        nav h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        nav ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        nav a {
+            color: var(--accent);
+            text-decoration: none;
+            padding: 8px 12px;
+            display: block;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        
+        nav a:hover {
+            background: var(--light);
+        }
+        
+        section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .strategy-2 h2 {
+            border-bottom-color: var(--purple);
+        }
+        
+        .strategy-3 h2 {
+            border-bottom-color: var(--orange);
+        }
+        
+        .strategy-3 th {
+            background: var(--orange);
+        }
+        
+        .strategy-3 .step-number {
+            background: var(--orange);
+        }
+        
+        .alert-orange {
+            background: #fef5e7;
+            border-color: var(--orange);
+        }
+        
+        .badge-orange {
+            background: var(--orange);
+            color: white;
+        }
+        
+        .strategy-4 h2 {
+            border-bottom-color: var(--teal);
+        }
+        
+        .strategy-4 th {
+            background: var(--teal);
+        }
+        
+        .strategy-4 .step-number {
+            background: var(--teal);
+        }
+        
+        .alert-teal {
+            background: #e8f8f5;
+            border-color: var(--teal);
+        }
+        
+        .badge-teal {
+            background: var(--teal);
+            color: white;
+        }
+        
+        h3 {
+            color: var(--primary);
+            margin: 25px 0 15px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+        
+        .alert-warning {
+            background: #fef9e7;
+            border-color: var(--warning);
+        }
+        
+        .alert-success {
+            background: #d5f5e3;
+            border-color: var(--success);
+        }
+        
+        .alert-danger {
+            background: #fadbd8;
+            border-color: var(--danger);
+        }
+        
+        .alert-info {
+            background: #ebf5fb;
+            border-color: var(--accent);
+        }
+        
+        .alert-purple {
+            background: #f5eef8;
+            border-color: var(--purple);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .strategy-2 th {
+            background: var(--purple);
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #ebf5fb;
+        }
+        
+        .highlight-green {
+            background: #d5f5e3 !important;
+        }
+        
+        .highlight-red {
+            background: #fadbd8 !important;
+        }
+        
+        .highlight-yellow {
+            background: #fef9e7 !important;
+        }
+        
+        .highlight-purple {
+            background: #f5eef8 !important;
+        }
+        
+        .uncheck-table th {
+            background: #c0392b;
+        }
+        
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+            .tab-btn {
+                padding: 12px 10px;
+                font-size: 0.85rem;
+            }
+            .tab-btn .icon {
+                display: none;
+            }
+        }
+        
+        .signal-box {
+            background: var(--dark);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .signal-box .label {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .signal-entry { background: #27ae60; }
+        .signal-big { background: #e91e63; }
+        .signal-rev { background: #ff9800; }
+        .signal-buy { background: #4caf50; }
+        .signal-sell { background: #f44336; }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .step-number {
+            background: var(--accent);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .strategy-2 .step-number {
+            background: var(--purple);
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .quick-ref {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .quick-ref h3 {
+            color: white;
+            margin-top: 0;
+        }
+        
+        .quick-ref ul {
+            margin-left: 20px;
+        }
+        
+        .dead-zone {
+            background: #2c3e50;
+            color: #e74c3c;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .dead-zone strong {
+            color: #f39c12;
+        }
+        
+        code {
+            background: #e8e8e8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .checkbox-list {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .checkbox-list li::before {
+            content: "☐ ";
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* ATM comparison cards */
+        .atm-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .atm-card {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .atm-card-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .atm-card-header.runner {
+            background: linear-gradient(135deg, var(--purple), #8e44ad);
+        }
+        
+        .atm-card-header.scalp {
+            background: linear-gradient(135deg, var(--success), #1e8449);
+        }
+        
+        .atm-card-body {
+            padding: 20px;
+        }
+        
+        .atm-card-body table {
+            margin: 0;
+        }
+        
+        .atm-card-body th {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .entry-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .entry-badge.e1-2 {
+            background: var(--purple);
+            color: white;
+        }
+        
+        .entry-badge.e3-plus {
+            background: var(--success);
+            color: white;
+        }
+        
+        @media print {
+            body { background: white; }
+            section { box-shadow: none; border: 1px solid #ddd; }
+            nav { display: none; }
+            .tab-container { display: none; }
+            .tab-content { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>VectorFlow Algo V1-O</h1>
+        <p class="subtitle">Complete Strategy Guide for Micro Gold Futures (MGC) — 2-Minute Chart</p>
+    </header>
+    
+    <!-- Tab Navigation -->
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <button class="tab-btn strategy-1 active" onclick="switchTab('timeofday')">
+                <span class="icon">🕐</span> Time of Day
+            </button>
+            <button class="tab-btn strategy-2" onclick="switchTab('drawdown')">
+                <span class="icon">📈</span> Moving Drawdown
+            </button>
+            <button class="tab-btn strategy-3" onclick="switchTab('newyork')">
+                <span class="icon">🗽</span> New York
+            </button>
+            <button class="tab-btn strategy-4" onclick="switchTab('runner')">
+                <span class="icon">🏃</span> Hold the Runner
+            </button>
+        </div>
+    </div>
+    
+    <!-- ==================== TIME OF DAY STRATEGY ==================== -->
+    <div id="timeofday" class="tab-content active">
+        <div class="container">
+            <nav>
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#tod-overview">1. Overview</a></li>
+                    <li><a href="#tod-windows">2. Trading Windows</a></li>
+                    <li><a href="#tod-signals">3. Signal Legend</a></li>
+                    <li><a href="#tod-config">4. Indicator Configuration</a></li>
+                    <li><a href="#tod-atm">5. Tradovate ATM Setup</a></li>
+                    <li><a href="#tod-rules">6. Rules Summary</a></li>
+                </ul>
+            </nav>
+            
+            <!-- SECTION 1: OVERVIEW -->
+            <section id="tod-overview">
+                <h2>1. Overview</h2>
+                <span class="badge badge-blue">Time of Day Strategy</span>
+                
+                <p style="margin-top: 15px;">This strategy targets <strong>100-tick scalps</strong> on Micro Gold Futures (MGC) during specific high-probability trading windows.</p>
+                
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Instrument</strong></td>
+                        <td>MGC (Micro Gold Futures)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Timeframe</strong></td>
+                        <td>2-minute chart</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Profit Target</strong></td>
+                        <td>100 ticks ($100 per contract)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stop Loss</strong></td>
+                        <td>100 ticks ($100 per contract)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk:Reward</strong></td>
+                        <td>1:1</td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-warning">
+                    <strong>⚡ Critical Rule: Signal Timing Buffer</strong><br>
+                    Signals are valid if they occur within <strong>±10 minutes</strong> of any trading window boundary. A signal at 5:52 PM is valid for the 6:00 PM Asia Open window.
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>📌 Trade Management</strong><br>
+                    When entering during a valid trading window, <strong>hold the trade to either Take Profit (TP) or Stop Loss (SL)</strong>. Do not manually exit early — let the ATM manage the trade. The auto-breakeven feature will protect your position once it reaches 70 ticks profit.
+                </div>
+            </section>
+            
+            <!-- SECTION 2: TRADING WINDOWS -->
+            <section id="tod-windows">
+                <h2>2. Trading Windows</h2>
+                
+                <p>All times are in <strong>Central Time (CT)</strong>. The ±10 minute buffer applies to all window boundaries.</p>
+                
+                <table>
+                    <tr>
+                        <th>Session</th>
+                        <th>Time (CT)</th>
+                        <th>Character</th>
+                        <th>Expectation</th>
+                    </tr>
+                    <tr>
+                        <td><strong>🌏 Asia Open</strong></td>
+                        <td>6:00 - 8:00 PM</td>
+                        <td>Momentum</td>
+                        <td>Initial directional push, follow ENTRY/BIG signals</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🔄 Asia Reversal</strong></td>
+                        <td>11:00 PM - 12:30 AM</td>
+                        <td>Mean Reversion</td>
+                        <td>Profit-taking, watch for REV signals</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🇬🇧 London Open</strong></td>
+                        <td>2:00 - 3:00 AM</td>
+                        <td>Breakout</td>
+                        <td>Fresh liquidity, strong directional moves</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td><strong>🇺🇸 NY Peak</strong></td>
+                        <td>7:00 - 11:00 AM</td>
+                        <td>High Volume</td>
+                        <td>Best window for 100-tick targets (COMEX 7:20 AM)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>↩️ NY Late Reversal</strong></td>
+                        <td>10:00 - 11:00 AM</td>
+                        <td>Reversal</td>
+                        <td>Mean reversion before lunch lull</td>
+                    </tr>
+                </table>
+                
+                <h3>🚫 Dead Zones - Avoid Trading</h3>
+                
+                <div class="dead-zone">
+                    <strong>12:00 PM - 6:00 PM CT</strong> — Low volume lunch and afternoon session<br>
+                    <strong>3:30 AM - 6:30 AM CT</strong> — Gap between London close and NY pre-market
+                </div>
+            </section>
+            
+            <!-- SECTION 3: SIGNAL LEGEND -->
+            <section id="tod-signals">
+                <h2>3. Signal Legend</h2>
+                
+                <p>Understanding the VectorFlow signal types and their priority:</p>
+                
+                <div class="signal-box">
+                    <span class="label signal-entry">ENTRY</span>
+                    <strong>Primary entry signal</strong> — Trend-aligned entry with momentum confirmation
+                </div>
+                
+                <div class="signal-box">
+                    <span class="label signal-big">BIG</span>
+                    <strong>High-conviction signal</strong> — Strong momentum, larger expected move
+                </div>
+                
+                <div class="signal-box">
+                    <span class="label signal-rev">REV</span>
+                    <strong>Reversal signal</strong> — Counter-trend setup, best during Asia Reversal / NY Late windows
+                </div>
+                
+                <div class="signal-box">
+                    <span class="label signal-buy">BUY</span> / <span class="label signal-sell">SELL</span>
+                    <strong>Direction indicators</strong> — Confirm trade direction with trend
+                </div>
+                
+                <h3>Signal Priority</h3>
+                <ol>
+                    <li><strong>BIG</strong> — Highest priority, take when available</li>
+                    <li><strong>ENTRY</strong> — Standard high-probability setup</li>
+                    <li><strong>REV</strong> — Use only in reversal windows with confirmation</li>
+                </ol>
+                
+                <div class="alert alert-info">
+                    <strong>💡 Pro Tip:</strong> Multiple signals appearing together (e.g., ENTRY + BIG) indicate higher conviction setups.
+                </div>
+            </section>
+            
+            <!-- SECTION 4: INDICATOR CONFIGURATION -->
+            <section id="tod-config">
+                <h2>4. Indicator Configuration</h2>
+                
+                <h3>Style Tab - Items to UNCHECK</h3>
+                
+                <p>Open the indicator settings and click the "Style" tab. <strong style="color: #c0392b;">UNCHECK</strong> the following items to remove visual clutter:</p>
+                
+                <table class="uncheck-table">
+                    <tr>
+                        <th>UNCHECK These Items</th>
+                        <th>UNCHECK These Items</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <ul class="checkbox-list">
+                                <li>Breakeven Long</li>
+                                <li>Breakeven Short</li>
+                                <li>Pullback Exit Short</li>
+                                <li>Range Exp Entry Bull (Time)</li>
+                                <li>Range Exp Entry Bear (Time)</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="checkbox-list">
+                                <li>HL2 for Trend Fill</li>
+                                <li>VWAP</li>
+                                <li>VWAP Upper</li>
+                                <li>VWAP Lower</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-success">
+                    <strong>✓ Leave all other Style items checked</strong> — Including Shapes, Pullback Exit Long, Range Exp Counter-Trend, Range Exp Reversal, Range Exp With-Trend, Smoothed Trend Line, ATR Trailing Stops, Window displays, and MTF Alignment.
+                </div>
+                
+                <h3>Inputs Tab - Session Overrides</h3>
+                
+                <p>In the Inputs tab, configure the <strong>Session Overrides</strong> to enable trading windows:</p>
+                
+                <table>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Enable Session Overrides</strong></td>
+                        <td>✅ Checked</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enable Asia Session</strong></td>
+                        <td>✅ Checked (Start: 19, End: 2)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enable London Session</strong></td>
+                        <td>✅ Checked (Start: 2, End: 7)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enable Peak Session (7-11 AM)</strong></td>
+                        <td>✅ Checked (Start: 7, End: 11)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enable NY Afternoon Session</strong></td>
+                        <td>☐ Unchecked (Dead Zone)</td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-info">
+                    <strong>💡 Note:</strong> NY Afternoon is left unchecked because it falls within the Dead Zone (12 PM - 6 PM CT) where we avoid trading.
+                </div>
+            </section>
+            
+            <!-- SECTION 5: TRADOVATE ATM SETUP -->
+            <section id="tod-atm">
+                <h2>5. Tradovate ATM Setup</h2>
+                
+                <p>Create an Order Template (ATM) in Tradovate for automatic take profit and stop loss management.</p>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Access ATM Settings</h4>
+                        <p>Navigate to <a href="https://trader.tradovate.com" target="_blank">trader.tradovate.com</a> and open your chart. Click the <strong>gear icon (⚙)</strong> next to the ATM dropdown in the order panel.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Create New ATM</h4>
+                        <p>In the ATM Settings dialog, click the <strong>"+" button</strong> next to the ATM Name field to create a new template.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Name Your ATM</h4>
+                        <p>Enter a descriptive name (e.g., <code>Micro 100 Ticks</code>). Click <strong>OK</strong> to confirm.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Configure Settings</h4>
+                        <p>Enter the values from the table below:</p>
+                    </div>
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Target #1</th>
+                        <th>Target #2</th>
+                    </tr>
+                    <tr>
+                        <td><strong>SHOW IN</strong></td>
+                        <td>Ticks</td>
+                        <td>Ticks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>QTY</strong></td>
+                        <td>5</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TYPE</strong></td>
+                        <td>TP + SL</td>
+                        <td>TP + SL</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td><strong>TAKE PROFIT</strong></td>
+                        <td><strong>100</strong></td>
+                        <td><strong>100</strong></td>
+                    </tr>
+                    <tr class="highlight-red">
+                        <td><strong>STOP LOSS</strong></td>
+                        <td><strong>100</strong></td>
+                        <td><strong>100</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>STOP LOSS TYPE</strong></td>
+                        <td>AB</td>
+                        <td>AB</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td><strong>PROFIT TRIGGER</strong></td>
+                        <td>70</td>
+                        <td>70</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td><strong>PLUS</strong></td>
+                        <td>2</td>
+                        <td>2</td>
+                    </tr>
+                </table>
+                
+                <h3>Settings Explanation</h3>
+                <ul>
+                    <li><strong>Take Profit (100):</strong> Exits at 100 ticks profit ($100 per MGC contract)</li>
+                    <li><strong>Stop Loss (100):</strong> Risk 100 ticks ($100) — 1:1 risk/reward ratio</li>
+                    <li><strong>Stop Loss Type (AB):</strong> Auto Breakeven — moves stop to entry after profit trigger</li>
+                    <li><strong>Profit Trigger (70):</strong> When trade reaches 70 ticks profit, auto-breakeven activates</li>
+                    <li><strong>Plus (2):</strong> Moves stop 2 ticks above breakeven to lock in small profit</li>
+                </ul>
+                
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Save and Verify</h4>
+                        <p>Ensure "SHOW IN" is set to <strong>Ticks</strong> (not Delta Price or $ Value). Click <strong>Save</strong> to store your ATM template.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION 6: RULES SUMMARY -->
+            <section id="tod-rules">
+                <h2>6. Rules Summary</h2>
+                
+                <h3>✅ Valid Entry Checklist</h3>
+                <ul>
+                    <li>Signal occurs within a trading window (±10 min buffer)</li>
+                    <li>Signal type is ENTRY, BIG, or REV (in appropriate window)</li>
+                    <li>Direction aligns with BUY/SELL indicator</li>
+                    <li>Not in a Dead Zone period</li>
+                </ul>
+                
+                <h3>❌ Skip These Setups</h3>
+                <ul>
+                    <li>Signals outside trading windows (beyond ±10 min buffer)</li>
+                    <li>REV signals during momentum windows (Asia Open, London, NY Peak early)</li>
+                    <li>Any signal during Dead Zones (12 PM - 6 PM CT, 3:30 - 6:30 AM CT)</li>
+                    <li>Conflicting signals (BUY and SELL appearing together)</li>
+                </ul>
+                
+                <h3>📌 Trade Management</h3>
+                <div class="alert alert-success">
+                    <strong>Hold to TP or SL:</strong> When you enter during a valid window, let the trade run to either your Take Profit or Stop Loss. Do not manually exit early. The ATM's auto-breakeven will move your stop to entry +2 ticks once 70 ticks of profit is reached, protecting your position.
+                </div>
+                
+                <div class="quick-ref">
+                    <h3>⚡ Quick Reference</h3>
+                    <p><strong>Best Windows:</strong> NY Peak (7-11 AM CT), London Open (2-3 AM CT)</p>
+                    <p><strong>Signal Priority:</strong> BIG → ENTRY → REV</p>
+                    <p><strong>Target:</strong> 100 ticks | <strong>Stop:</strong> 100 ticks | <strong>Auto-BE:</strong> at 70 ticks (+2)</p>
+                    <p><strong>Trade Management:</strong> Hold to TP or SL — no manual exits</p>
+                    <p><strong>Remember:</strong> ±10 minute buffer on all window times!</p>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- ==================== MOVING DRAWDOWN STRATEGY ==================== -->
+    <div id="drawdown" class="tab-content strategy-2">
+        <div class="container">
+            <nav>
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#dd-overview">1. Overview</a></li>
+                    <li><a href="#dd-concept">2. Strategy Concept</a></li>
+                    <li><a href="#dd-atm">3. ATM Configurations</a></li>
+                    <li><a href="#dd-entries">4. Entry Rules</a></li>
+                    <li><a href="#dd-rules">5. Rules Summary</a></li>
+                </ul>
+            </nav>
+            
+            <!-- SECTION 1: OVERVIEW -->
+            <section id="dd-overview">
+                <h2>1. Overview</h2>
+                <span class="badge badge-purple">Moving Drawdown Strategy</span>
+                
+                <p style="margin-top: 15px;">This strategy is designed to <strong>recover from drawdown</strong> using a combination of runner trades and quick scalps. The first entries aim for larger targets while subsequent entries take smaller, higher-probability profits.</p>
+                
+                <table>
+                    <tr>
+                        <th style="background: var(--purple);">Parameter</th>
+                        <th style="background: var(--purple);">Entry 1-2 (Runner)</th>
+                        <th style="background: var(--purple);">Entry 3+ (Scalp)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Instrument</strong></td>
+                        <td colspan="2">MGC (Micro Gold Futures)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Timeframe</strong></td>
+                        <td colspan="2">2-minute chart</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td><strong>Profit Target</strong></td>
+                        <td>150-200 ticks</td>
+                        <td>40-50 ticks</td>
+                    </tr>
+                    <tr class="highlight-red">
+                        <td><strong>Stop Loss</strong></td>
+                        <td>200 ticks</td>
+                        <td>200 ticks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk:Reward</strong></td>
+                        <td>1:1 (or better)</td>
+                        <td>4:1 (risk:reward)</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td><strong>Auto-Breakeven</strong></td>
+                        <td>Yes (at 70 ticks)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr class="highlight-purple">
+                        <td><strong>Auto-Trail</strong></td>
+                        <td>Yes (70 ticks)</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-purple">
+                    <strong>📈 Strategy Goal</strong><br>
+                    Use the first 1-2 entries to catch larger moves with trailing stops. If those don't hit, switch to quick scalps to chip away at the drawdown with high win-rate trades.
+                </div>
+            </section>
+            
+            <!-- SECTION 2: STRATEGY CONCEPT -->
+            <section id="dd-concept">
+                <h2>2. Strategy Concept</h2>
+                
+                <h3>Phase 1: Runner Entries (Entry 1-2)</h3>
+                <p>The first two entries are designed to catch <strong>larger directional moves</strong>:</p>
+                <ul>
+                    <li>Target: 150-200 ticks profit</li>
+                    <li>Wide stop loss (200 ticks) gives room to breathe</li>
+                    <li>Auto-breakeven at 70 ticks protects capital</li>
+                    <li>Trailing stop locks in profits as trade moves in your favor</li>
+                </ul>
+                
+                <div class="alert alert-info">
+                    <strong>💡 Why Runners First?</strong><br>
+                    When in drawdown, one good runner can recover multiple small losses. The trailing stop ensures you capture extended moves while the auto-breakeven protects against reversals.
+                </div>
+                
+                <h3>Phase 2: Scalp Entries (Entry 3+)</h3>
+                <p>After the first two entries, switch to <strong>quick scalps</strong>:</p>
+                <ul>
+                    <li>Target: 40-50 ticks profit</li>
+                    <li>Same wide stop (200 ticks) for consistency</li>
+                    <li>No auto-breakeven — let the trade hit TP quickly</li>
+                    <li>Higher win rate due to smaller target</li>
+                </ul>
+                
+                <div class="alert alert-success">
+                    <strong>✓ Scalp Advantage</strong><br>
+                    Smaller targets are hit more frequently. Each 50-tick win chips away at the drawdown while the wide stop prevents getting stopped out on normal volatility.
+                </div>
+            </section>
+            
+            <!-- SECTION 3: ATM CONFIGURATIONS -->
+            <section id="dd-atm">
+                <h2>3. ATM Configurations</h2>
+                
+                <p>You'll need <strong>two ATM templates</strong> for this strategy:</p>
+                
+                <div class="atm-cards">
+                    <!-- Runner ATM Card -->
+                    <div class="atm-card">
+                        <div class="atm-card-header runner">
+                            <h3 style="margin: 0; color: white;">Micro 200 Ticks</h3>
+                            <span class="entry-badge e1-2">Entry 1-2</span>
+                        </div>
+                        <div class="atm-card-body">
+                            <table>
+                                <tr>
+                                    <th>Setting</th>
+                                    <th>Target #1</th>
+                                    <th>Target #2</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>QTY</strong></td>
+                                    <td>5</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>TYPE</strong></td>
+                                    <td>TP + SL</td>
+                                    <td>TP + SL</td>
+                                </tr>
+                                <tr class="highlight-green">
+                                    <td><strong>TAKE PROFIT</strong></td>
+                                    <td><strong>200</strong></td>
+                                    <td><strong>200</strong></td>
+                                </tr>
+                                <tr class="highlight-red">
+                                    <td><strong>STOP LOSS</strong></td>
+                                    <td><strong>200</strong></td>
+                                    <td><strong>200</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>STOP LOSS TYPE</strong></td>
+                                    <td>AB + AT</td>
+                                    <td>AB + AT</td>
+                                </tr>
+                                <tr class="highlight-yellow">
+                                    <td><strong>PROFIT TRIGGER</strong></td>
+                                    <td>70</td>
+                                    <td>70</td>
+                                </tr>
+                                <tr class="highlight-yellow">
+                                    <td><strong>PLUS</strong></td>
+                                    <td>2</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr class="highlight-purple">
+                                    <td><strong>AUTO TRAIL</strong></td>
+                                    <td>70</td>
+                                    <td>70</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Scalp ATM Card -->
+                    <div class="atm-card">
+                        <div class="atm-card-header scalp">
+                            <h3 style="margin: 0; color: white;">Micro 50 Ticks</h3>
+                            <span class="entry-badge e3-plus">Entry 3+</span>
+                        </div>
+                        <div class="atm-card-body">
+                            <table>
+                                <tr>
+                                    <th>Setting</th>
+                                    <th>Target #1</th>
+                                    <th>Target #2</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>QTY</strong></td>
+                                    <td>5</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>TYPE</strong></td>
+                                    <td>TP + SL</td>
+                                    <td>TP + SL</td>
+                                </tr>
+                                <tr class="highlight-green">
+                                    <td><strong>TAKE PROFIT</strong></td>
+                                    <td><strong>50</strong></td>
+                                    <td><strong>50</strong></td>
+                                </tr>
+                                <tr class="highlight-red">
+                                    <td><strong>STOP LOSS</strong></td>
+                                    <td><strong>200</strong></td>
+                                    <td><strong>200</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>STOP LOSS TYPE</strong></td>
+                                    <td>Stop</td>
+                                    <td>Stop</td>
+                                </tr>
+                                <tr style="color: #999;">
+                                    <td><strong>PROFIT TRIGGER</strong></td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                </tr>
+                                <tr style="color: #999;">
+                                    <td><strong>PLUS</strong></td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                </tr>
+                                <tr style="color: #999;">
+                                    <td><strong>AUTO TRAIL</strong></td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Settings Explanation</h3>
+                
+                <h4>Runner ATM (Micro 200 Ticks)</h4>
+                <ul>
+                    <li><strong>AB + AT:</strong> Auto Breakeven + Auto Trail — combines protection with profit capture</li>
+                    <li><strong>Profit Trigger (70):</strong> Breakeven activates at 70 ticks profit</li>
+                    <li><strong>Plus (2/0):</strong> Target #1 locks in 2 ticks, Target #2 trails from breakeven</li>
+                    <li><strong>Auto Trail (70):</strong> Trail distance of 70 ticks — follows price as it moves</li>
+                </ul>
+                
+                <h4>Scalp ATM (Micro 50 Ticks)</h4>
+                <ul>
+                    <li><strong>Stop (no auto-features):</strong> Simple stop loss, no trailing or breakeven</li>
+                    <li><strong>Quick exits:</strong> 50-tick target hits faster than trailing can activate</li>
+                    <li><strong>Wide stop (200):</strong> Avoids getting stopped on normal price swings</li>
+                </ul>
+            </section>
+            
+            <!-- SECTION 4: ENTRY RULES -->
+            <section id="dd-entries">
+                <h2>4. Entry Rules</h2>
+                
+                <div class="alert alert-purple">
+                    <strong>🔄 Entry Counter is Per Direction</strong><br>
+                    The entry count (1, 2, 3+) is tracked <strong>separately for each market direction</strong>. When the market switches from bearish to bullish (or vice versa), reset your entry counter back to Entry 1.
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>First Entry in Direction — Use Runner ATM</h4>
+                        <p>On your <strong>first valid signal</strong> in the current direction (e.g., first SELL in a bearish move), enter using the <code>Micro 200 Ticks</code> ATM.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Second Entry in Same Direction — Use Runner ATM</h4>
+                        <p>If you get another signal <strong>in the same direction</strong>, use the <code>Micro 200 Ticks</code> ATM again. Two attempts at a runner in the same trend.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Third+ Entry in Same Direction — Switch to Scalp ATM</h4>
+                        <p>For <strong>Entry 3 and beyond in the same direction</strong>, switch to the <code>Micro 50 Ticks</code> ATM. Focus on quick scalps.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">↻</div>
+                    <div class="step-content">
+                        <h4>Direction Changes — Reset Counter</h4>
+                        <p>When market direction flips (bearish → bullish or bullish → bearish), <strong>reset your entry counter to 1</strong> and start with the Runner ATM again.</p>
+                    </div>
+                </div>
+                
+                <h3>Example Scenario</h3>
+                <table>
+                    <tr>
+                        <th style="background: var(--purple);">Trade #</th>
+                        <th style="background: var(--purple);">Direction</th>
+                        <th style="background: var(--purple);">Entry Count</th>
+                        <th style="background: var(--purple);">ATM to Use</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>🔴 Bearish (SELL)</td>
+                        <td>Entry 1</td>
+                        <td>Micro 200 Ticks</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>🔴 Bearish (SELL)</td>
+                        <td>Entry 2</td>
+                        <td>Micro 200 Ticks</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>🔴 Bearish (SELL)</td>
+                        <td>Entry 3</td>
+                        <td>Micro 50 Ticks</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td>4</td>
+                        <td>🟢 Bullish (BUY)</td>
+                        <td><strong>Entry 1 ↻</strong></td>
+                        <td>Micro 200 Ticks</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>🟢 Bullish (BUY)</td>
+                        <td>Entry 2</td>
+                        <td>Micro 200 Ticks</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>🟢 Bullish (BUY)</td>
+                        <td>Entry 3</td>
+                        <td>Micro 50 Ticks</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td>7</td>
+                        <td>🔴 Bearish (SELL)</td>
+                        <td><strong>Entry 1 ↻</strong></td>
+                        <td>Micro 200 Ticks</td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-warning">
+                    <strong>⚠️ Track Direction + Entry Count</strong><br>
+                    Keep note of both your <strong>current market direction</strong> and <strong>entry count within that direction</strong>. When direction flips, you get fresh runner attempts!
+                </div>
+            </section>
+            
+            <!-- SECTION 5: RULES SUMMARY -->
+            <section id="dd-rules">
+                <h2>5. Rules Summary</h2>
+                
+                <h3>📊 Entry Progression (Per Direction)</h3>
+                <table>
+                    <tr>
+                        <th style="background: var(--purple);">Entry #</th>
+                        <th style="background: var(--purple);">ATM to Use</th>
+                        <th style="background: var(--purple);">Target</th>
+                        <th style="background: var(--purple);">Stop</th>
+                        <th style="background: var(--purple);">Features</th>
+                    </tr>
+                    <tr>
+                        <td><strong>1</strong></td>
+                        <td>Micro 200 Ticks</td>
+                        <td>200 ticks</td>
+                        <td>200 ticks</td>
+                        <td>BE @ 70, Trail 70</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2</strong></td>
+                        <td>Micro 200 Ticks</td>
+                        <td>200 ticks</td>
+                        <td>200 ticks</td>
+                        <td>BE @ 70, Trail 70</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td><strong>3+</strong></td>
+                        <td>Micro 50 Ticks</td>
+                        <td>50 ticks</td>
+                        <td>200 ticks</td>
+                        <td>None (simple stop)</td>
+                    </tr>
+                </table>
+                
+                <h3>🔄 Direction Change = Counter Reset</h3>
+                <div class="alert alert-purple">
+                    <strong>When market direction changes (Bearish ↔ Bullish), reset your entry counter to 1.</strong><br>
+                    Each new direction gets fresh runner attempts (Entry 1-2) before switching to scalps (Entry 3+).
+                </div>
+                
+                <h3>✅ Key Points</h3>
+                <ul>
+                    <li><strong>Entry 1-2 per direction:</strong> Go for runners with trailing stops</li>
+                    <li><strong>Entry 3+ per direction:</strong> Switch to quick scalps</li>
+                    <li><strong>Direction change:</strong> Reset counter to Entry 1</li>
+                    <li><strong>All entries:</strong> Use 200-tick stop loss</li>
+                    <li><strong>Hold to TP or SL:</strong> No manual exits</li>
+                </ul>
+                
+                <div class="quick-ref">
+                    <h3>⚡ Quick Reference</h3>
+                    <p><strong>Entry 1-2 (per direction):</strong> Micro 200 Ticks → 200 TP / 200 SL / BE+Trail @ 70</p>
+                    <p><strong>Entry 3+ (per direction):</strong> Micro 50 Ticks → 50 TP / 200 SL / No BE</p>
+                    <p><strong>Direction Change:</strong> Reset entry counter to 1 — fresh runner attempts!</p>
+                    <p><strong>Remember:</strong> Track both direction AND entry count within that direction!</p>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- ==================== HOLD THE RUNNER STRATEGY ==================== -->
+    <div id="runner" class="tab-content strategy-4">
+        <div class="container">
+            <nav>
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#runner-overview">1. Overview</a></li>
+                    <li><a href="#runner-entry">2. Entry Rules</a></li>
+                    <li><a href="#runner-exit">3. Exit Rules</a></li>
+                    <li><a href="#runner-atm">4. ATM Configuration</a></li>
+                    <li><a href="#runner-cooldown">5. Cool Down Period</a></li>
+                    <li><a href="#runner-summary">6. Rules Summary</a></li>
+                </ul>
+            </nav>
+            
+            <!-- SECTION 1: OVERVIEW -->
+            <section id="runner-overview">
+                <h2>1. Overview</h2>
+                <span class="badge badge-teal">Hold the Runner Strategy</span>
+                
+                <p style="margin-top: 15px;">This strategy captures <strong>large directional moves of 700+ ticks</strong> by riding the trend from signal to signal. Unlike scalping strategies, you hold the position until an opposing signal appears — letting winners run to their full potential.</p>
+                
+                <table>
+                    <tr>
+                        <th style="background: var(--teal);">Parameter</th>
+                        <th style="background: var(--teal);">Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Instrument</strong></td>
+                        <td>MGC (Micro Gold Futures)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Timeframe</strong></td>
+                        <td>5-minute chart</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Target Move</strong></td>
+                        <td>700+ ticks ($700+ per contract)</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td><strong>Take Profit</strong></td>
+                        <td>None — exit on opposing signal</td>
+                    </tr>
+                    <tr class="highlight-red">
+                        <td><strong>Stop Loss</strong></td>
+                        <td>200 ticks</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td><strong>Auto-Breakeven</strong></td>
+                        <td>At 200 ticks profit</td>
+                    </tr>
+                    <tr class="highlight-purple">
+                        <td><strong>Trailing Stop</strong></td>
+                        <td>200 ticks (after BE triggers)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Preferred Session</strong></td>
+                        <td>Asia Open or NY Session</td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-teal">
+                    <strong>🏃 The Goal: Catch the Big Move</strong><br>
+                    Gold often makes 700-1000+ tick moves over a session. This strategy aims to capture those moves by entering early and holding until the trend reverses. The trailing stop protects profits while giving the trade room to breathe.
+                </div>
+                
+                <div class="alert alert-danger">
+                    <strong>🚫 NO TRADING ON NEWS DAYS</strong><br>
+                    Avoid this strategy on days with major economic releases. News volatility can trigger your stop on whipsaws before the real move begins.
+                </div>
+            </section>
+            
+            <!-- SECTION 2: ENTRY RULES -->
+            <section id="runner-entry">
+                <h2>2. Entry Rules</h2>
+                
+                <h3>Valid Entry Signals</h3>
+                <p>Enter on <strong>any valid signal</strong> during the Asia or NY session:</p>
+                
+                <div class="signal-box">
+                    <span class="label signal-buy">BUY</span> / <span class="label signal-sell">SELL</span>
+                    <strong>Direction signals</strong> — Primary entry trigger for this strategy
+                </div>
+                
+                <div class="signal-box">
+                    <span class="label signal-entry">ENTRY</span>
+                    <strong>Standard entry signal</strong> — Valid for runner entries
+                </div>
+                
+                <div class="signal-box">
+                    <span class="label signal-big">BIG</span>
+                    <strong>High-conviction signal</strong> — Excellent for runner entries
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Check for News</h4>
+                        <p>Verify no major economic releases are scheduled. Skip this strategy entirely on news days.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Wait for Valid Signal</h4>
+                        <p>Look for a <strong>BUY, SELL, ENTRY, or BIG</strong> signal during the Asia Open (6-8 PM CT) or NY session (7-11 AM CT).</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Enter the Trade</h4>
+                        <p>Enter in the direction of the signal using the <code>Runner 200 Trail</code> ATM. Note your entry price.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Hold the Position</h4>
+                        <p>Let the trade run. The trailing stop will protect profits automatically. Do NOT exit manually — wait for the opposing signal.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION 3: EXIT RULES -->
+            <section id="runner-exit">
+                <h2>3. Exit Rules</h2>
+                
+                <div class="alert alert-teal">
+                    <strong>🎯 Exit on Opposing Signal</strong><br>
+                    The key to this strategy is holding until you see an opposing signal. No fixed take profit — let the market tell you when the move is done.
+                </div>
+                
+                <h3>Exit Conditions</h3>
+                <table>
+                    <tr>
+                        <th style="background: var(--teal);">If You Are</th>
+                        <th style="background: var(--teal);">Exit When You See</th>
+                    </tr>
+                    <tr>
+                        <td><strong>LONG</strong> (bought on BUY signal)</td>
+                        <td>Any <strong>SELL</strong>, <strong>ENTRY</strong> (short), or <strong>BIG</strong> (short) signal</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SHORT</strong> (sold on SELL signal)</td>
+                        <td>Any <strong>BUY</strong>, <strong>ENTRY</strong> (long), or <strong>BIG</strong> (long) signal</td>
+                    </tr>
+                </table>
+                
+                <h3>Other Exit Scenarios</h3>
+                <ul>
+                    <li><strong>Stop Loss Hit (200 ticks):</strong> Trade didn't work — accept the loss</li>
+                    <li><strong>Trailing Stop Hit:</strong> Move reversed after profit — you've locked in gains</li>
+                    <li><strong>Breakeven Stop Hit:</strong> Trade went positive then reversed — no loss</li>
+                </ul>
+                
+                <h3>Example Trade Flow</h3>
+                <table>
+                    <tr>
+                        <th style="background: var(--teal);">Event</th>
+                        <th style="background: var(--teal);">Action</th>
+                        <th style="background: var(--teal);">Position</th>
+                    </tr>
+                    <tr>
+                        <td>6:15 PM — BUY signal appears</td>
+                        <td>Enter LONG at 4,350.0</td>
+                        <td>Long, SL at 4,330.0</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td>Price reaches 4,370.0 (+200 ticks)</td>
+                        <td>Auto-BE triggers</td>
+                        <td>Long, SL moves to 4,350.0</td>
+                    </tr>
+                    <tr class="highlight-purple">
+                        <td>Price continues to 4,420.0 (+700 ticks)</td>
+                        <td>Trail follows at 200 ticks</td>
+                        <td>Long, SL at 4,400.0</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td>9:30 AM — SELL signal appears at 4,415.0</td>
+                        <td><strong>EXIT LONG</strong></td>
+                        <td>+650 ticks profit</td>
+                    </tr>
+                </table>
+            </section>
+            
+            <!-- SECTION 4: ATM CONFIGURATION -->
+            <section id="runner-atm">
+                <h2>4. ATM Configuration</h2>
+                
+                <p>Create the <strong>Runner 200 Trail</strong> ATM template in Tradovate:</p>
+                
+                <table>
+                    <tr>
+                        <th style="background: var(--teal);">Setting</th>
+                        <th style="background: var(--teal);">Target #1</th>
+                        <th style="background: var(--teal);">Target #2</th>
+                    </tr>
+                    <tr>
+                        <td><strong>ATM NAME</strong></td>
+                        <td colspan="2">Runner 200 Trail</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SHOW IN</strong></td>
+                        <td>Ticks</td>
+                        <td>Ticks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>QTY</strong></td>
+                        <td>5</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TYPE</strong></td>
+                        <td>SL Only</td>
+                        <td>SL Only</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td><strong>TAKE PROFIT</strong></td>
+                        <td><strong>—</strong> (None)</td>
+                        <td><strong>—</strong> (None)</td>
+                    </tr>
+                    <tr class="highlight-red">
+                        <td><strong>STOP LOSS</strong></td>
+                        <td><strong>200</strong></td>
+                        <td><strong>200</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>STOP LOSS TYPE</strong></td>
+                        <td>AB + AT</td>
+                        <td>AB + AT</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td><strong>PROFIT TRIGGER</strong></td>
+                        <td>200</td>
+                        <td>200</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td><strong>PLUS</strong></td>
+                        <td>2</td>
+                        <td>2</td>
+                    </tr>
+                    <tr class="highlight-purple">
+                        <td><strong>AUTO TRAIL</strong></td>
+                        <td>200</td>
+                        <td>200</td>
+                    </tr>
+                </table>
+                
+                <h3>Settings Explanation</h3>
+                <ul>
+                    <li><strong>No Take Profit:</strong> We exit manually on opposing signal, not at a fixed target</li>
+                    <li><strong>Stop Loss (200):</strong> Initial risk — wide enough to handle normal volatility</li>
+                    <li><strong>AB + AT:</strong> Auto Breakeven + Auto Trail — protects profits automatically</li>
+                    <li><strong>Profit Trigger (200):</strong> Breakeven activates after 200 ticks profit</li>
+                    <li><strong>Auto Trail (200):</strong> Once triggered, stop trails 200 ticks behind price</li>
+                </ul>
+                
+                <div class="alert alert-warning">
+                    <strong>⚠️ Manual Exit Required</strong><br>
+                    Since there's no take profit, you must manually close the position when you see the opposing signal. Set alerts if needed!
+                </div>
+            </section>
+            
+            <!-- SECTION 5: COOL DOWN PERIOD -->
+            <section id="runner-cooldown">
+                <h2>5. Cool Down Period</h2>
+                
+                <div class="alert alert-teal">
+                    <strong>⏸️ Why Cool Down?</strong><br>
+                    After exiting on an opposing signal, <strong>do not immediately re-enter</strong> in the new direction. The initial opposing signal could be an impulse move or fake-out. Wait for confirmation.
+                </div>
+                
+                <h3>Cool Down Rules</h3>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Exit on Opposing Signal</h4>
+                        <p>Close your position when the opposing signal appears.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Wait for Confirmation</h4>
+                        <p>Do NOT immediately enter in the new direction. Wait for <strong>another signal</strong> in the new direction to confirm the reversal is real.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Enter on Confirmation</h4>
+                        <p>Once you see a second signal confirming the new direction, enter the new trade with the same ATM settings.</p>
+                    </div>
+                </div>
+                
+                <h3>Example: Cool Down in Action</h3>
+                <table>
+                    <tr>
+                        <th style="background: var(--teal);">Event</th>
+                        <th style="background: var(--teal);">Action</th>
+                    </tr>
+                    <tr>
+                        <td>You're LONG from Asia session</td>
+                        <td>Holding position</td>
+                    </tr>
+                    <tr>
+                        <td>9:00 AM — SELL signal appears</td>
+                        <td><strong>Exit LONG</strong> — take profits</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td>9:00 AM — Consider going SHORT?</td>
+                        <td><strong>NO — Cool down period</strong></td>
+                    </tr>
+                    <tr>
+                        <td>9:45 AM — Another SELL/ENTRY (short) appears</td>
+                        <td>Confirmation received</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td>9:45 AM — Enter SHORT</td>
+                        <td>New runner trade begins</td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-warning">
+                    <strong>⚠️ Avoid Impulse Moves</strong><br>
+                    The cool down period prevents you from getting caught in a fake reversal. Many opposing signals are just profit-taking before the original trend continues. Wait for confirmation!
+                </div>
+            </section>
+            
+            <!-- SECTION 6: RULES SUMMARY -->
+            <section id="runner-summary">
+                <h2>6. Rules Summary</h2>
+                
+                <h3>✅ Entry Checklist</h3>
+                <ul>
+                    <li>☐ No major news scheduled</li>
+                    <li>☐ Trading during Asia Open or NY session</li>
+                    <li>☐ Valid signal: BUY, SELL, ENTRY, or BIG</li>
+                    <li>☐ Using 5-minute timeframe</li>
+                    <li>☐ Runner 200 Trail ATM selected</li>
+                </ul>
+                
+                <h3>🎯 Exit Checklist</h3>
+                <ul>
+                    <li>☐ Opposing signal appears (BUY→SELL or SELL→BUY)</li>
+                    <li>☐ OR trailing stop is hit</li>
+                    <li>☐ OR initial stop loss is hit</li>
+                </ul>
+                
+                <h3>⏸️ Cool Down Rules</h3>
+                <ul>
+                    <li>☐ Do NOT re-enter immediately after exit</li>
+                    <li>☐ Wait for confirming signal in new direction</li>
+                    <li>☐ Then enter new runner trade</li>
+                </ul>
+                
+                <h3>Key Differences from Other Strategies</h3>
+                <table>
+                    <tr>
+                        <th style="background: var(--teal);">Feature</th>
+                        <th style="background: var(--teal);">Hold the Runner</th>
+                        <th style="background: var(--teal);">Other Strategies</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Timeframe</strong></td>
+                        <td>5-minute</td>
+                        <td>2-minute</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Take Profit</strong></td>
+                        <td>None (signal-based exit)</td>
+                        <td>Fixed (100-300 ticks)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Target Move</strong></td>
+                        <td>700+ ticks</td>
+                        <td>50-300 ticks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hold Time</strong></td>
+                        <td>Hours (potentially overnight)</td>
+                        <td>Minutes to hours</td>
+                    </tr>
+                </table>
+                
+                <div class="quick-ref" style="background: linear-gradient(135deg, #1abc9c, #16a085);">
+                    <h3>⚡ Quick Reference</h3>
+                    <p><strong>Timeframe:</strong> 5-minute chart</p>
+                    <p><strong>Entry:</strong> Any valid signal (BUY, SELL, ENTRY, BIG)</p>
+                    <p><strong>Exit:</strong> Opposing signal — no fixed TP</p>
+                    <p><strong>Stop:</strong> 200 ticks | <strong>BE + Trail:</strong> 200 ticks</p>
+                    <p><strong>Target:</strong> 700+ ticks per runner</p>
+                    <p><strong>Cool Down:</strong> Wait for confirmation before re-entering opposite direction</p>
+                    <p><strong>Remember:</strong> NO TRADING ON NEWS DAYS!</p>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- ==================== NEW YORK STRATEGY ==================== -->
+    <div id="newyork" class="tab-content strategy-3">
+        <div class="container">
+            <nav>
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#ny-overview">1. Overview</a></li>
+                    <li><a href="#ny-rules">2. Entry Rules</a></li>
+                    <li><a href="#ny-atm">3. ATM Configuration</a></li>
+                    <li><a href="#ny-reentry">4. Re-Entry Rules</a></li>
+                    <li><a href="#ny-summary">5. Rules Summary</a></li>
+                </ul>
+            </nav>
+            
+            <!-- SECTION 1: OVERVIEW -->
+            <section id="ny-overview">
+                <h2>1. Overview</h2>
+                <span class="badge badge-orange">New York Strategy</span>
+                
+                <p style="margin-top: 15px;">This strategy targets the <strong>high-volume New York open</strong> with a focused 1-hour window. Designed for <strong>non-news days only</strong> to avoid volatile, unpredictable price action.</p>
+                
+                <table>
+                    <tr>
+                        <th style="background: var(--orange);">Parameter</th>
+                        <th style="background: var(--orange);">Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Instrument</strong></td>
+                        <td>MGC (Micro Gold Futures)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Timeframe</strong></td>
+                        <td>2-minute chart</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trading Window</strong></td>
+                        <td>7:00 AM - 8:00 AM CT</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td><strong>Profit Target</strong></td>
+                        <td>300 ticks ($300 per contract)</td>
+                    </tr>
+                    <tr class="highlight-red">
+                        <td><strong>Stop Loss</strong></td>
+                        <td>200 ticks ($200 per contract)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk:Reward</strong></td>
+                        <td>1:1.5 (risking 200 to make 300)</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td><strong>Auto-Breakeven</strong></td>
+                        <td>At 85 ticks (+2)</td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-danger">
+                    <strong>🚫 NO TRADING ON NEWS DAYS</strong><br>
+                    Do not use this strategy on days with major economic releases (FOMC, NFP, CPI, etc.). The volatility makes price action too unpredictable and increases the risk of getting stopped out on whipsaws.
+                </div>
+                
+                <div class="alert alert-orange">
+                    <strong>🗽 Why 7-8 AM CT?</strong><br>
+                    This window captures the initial New York momentum after COMEX opens (7:20 AM CT). On non-news days, this hour typically establishes a clear directional move that can run 300+ ticks.
+                </div>
+            </section>
+            
+            <!-- SECTION 2: ENTRY RULES -->
+            <section id="ny-rules">
+                <h2>2. Entry Rules</h2>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Check Economic Calendar</h4>
+                        <p>Before the session, verify there are <strong>no major news releases</strong> scheduled. Skip this strategy entirely on news days.</p>
+                        <p><strong>News to avoid:</strong> FOMC, NFP, CPI, PPI, GDP, Jobless Claims, Fed speeches</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Wait for Signal (7:00 - 8:00 AM CT)</h4>
+                        <p>Look for any of these valid entry signals during the 7-8 AM window:</p>
+                        <ul>
+                            <li><strong>BIG</strong> — High-conviction momentum signal</li>
+                            <li><strong>BUY / SELL</strong> — Directional signal</li>
+                            <li><strong>ENTRY</strong> — Standard entry signal</li>
+                        </ul>
+                        <p>The ±10 minute buffer applies (valid signals from 6:50 AM - 8:10 AM).</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Enter Trade</h4>
+                        <p>On a valid signal, enter using the <code>NY 300 Ticks</code> ATM. Note your entry price for potential re-entry.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Hold to TP or SL</h4>
+                        <p>Let the trade run to either 300-tick profit or 200-tick stop. The auto-breakeven at 85 ticks will protect your position once triggered.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SECTION 3: ATM CONFIGURATION -->
+            <section id="ny-atm">
+                <h2>3. ATM Configuration</h2>
+                
+                <p>Create the <strong>NY 300 Ticks</strong> ATM template in Tradovate:</p>
+                
+                <table>
+                    <tr>
+                        <th style="background: var(--orange);">Setting</th>
+                        <th style="background: var(--orange);">Target #1</th>
+                        <th style="background: var(--orange);">Target #2</th>
+                    </tr>
+                    <tr>
+                        <td><strong>ATM NAME</strong></td>
+                        <td colspan="2">NY 300 Ticks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SHOW IN</strong></td>
+                        <td>Ticks</td>
+                        <td>Ticks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>QTY</strong></td>
+                        <td>5</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TYPE</strong></td>
+                        <td>TP + SL</td>
+                        <td>TP + SL</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td><strong>TAKE PROFIT</strong></td>
+                        <td><strong>300</strong></td>
+                        <td><strong>300</strong></td>
+                    </tr>
+                    <tr class="highlight-red">
+                        <td><strong>STOP LOSS</strong></td>
+                        <td><strong>200</strong></td>
+                        <td><strong>200</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>STOP LOSS TYPE</strong></td>
+                        <td>AB</td>
+                        <td>AB</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td><strong>PROFIT TRIGGER</strong></td>
+                        <td>85</td>
+                        <td>85</td>
+                    </tr>
+                    <tr class="highlight-yellow">
+                        <td><strong>PLUS</strong></td>
+                        <td>2</td>
+                        <td>2</td>
+                    </tr>
+                </table>
+                
+                <h3>Settings Explanation</h3>
+                <ul>
+                    <li><strong>Take Profit (300):</strong> Larger target captures extended NY moves</li>
+                    <li><strong>Stop Loss (200):</strong> Wide stop accommodates NY volatility</li>
+                    <li><strong>Profit Trigger (85):</strong> Breakeven activates at 85 ticks — more room than the 70-tick trigger</li>
+                    <li><strong>Plus (2):</strong> Locks in 2 ticks profit at breakeven</li>
+                </ul>
+            </section>
+            
+            <!-- SECTION 4: RE-ENTRY RULES -->
+            <section id="ny-reentry">
+                <h2>4. Re-Entry Rules</h2>
+                
+                <div class="alert alert-orange">
+                    <strong>🔄 Re-Entry Opportunity</strong><br>
+                    If price returns to or near your original entry while still moving in the correct direction, you can re-enter with the <strong>same ATM settings</strong>.
+                </div>
+                
+                <h3>Re-Entry Conditions</h3>
+                <ul>
+                    <li><strong>Price returns to entry zone:</strong> Price comes back to within ~20 ticks of your original entry</li>
+                    <li><strong>Same direction confirmed:</strong> BUY/SELL indicator still shows the same direction</li>
+                    <li><strong>Still within window:</strong> Re-entry should occur while NY momentum is active</li>
+                    <li><strong>Use same ATM:</strong> Enter with the same <code>NY 300 Ticks</code> ATM</li>
+                </ul>
+                
+                <h3>Example Scenario</h3>
+                <table>
+                    <tr>
+                        <th style="background: var(--orange);">Event</th>
+                        <th style="background: var(--orange);">Action</th>
+                    </tr>
+                    <tr>
+                        <td>7:15 AM — BIG signal (SELL) appears</td>
+                        <td>Enter SHORT at 2650.0</td>
+                    </tr>
+                    <tr>
+                        <td>Price drops 85 ticks</td>
+                        <td>Auto-BE triggers, stop moves to 2649.8</td>
+                    </tr>
+                    <tr>
+                        <td>Price retraces back to 2649.5</td>
+                        <td>Stopped out at breakeven (+2 ticks)</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td>7:35 AM — Price at 2650.2, SELL still active</td>
+                        <td><strong>Re-enter SHORT</strong> with same ATM</td>
+                    </tr>
+                    <tr>
+                        <td>Price continues down to 2620.0</td>
+                        <td>TP hit — +300 ticks profit</td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-warning">
+                    <strong>⚠️ Don't Chase</strong><br>
+                    Only re-enter if price comes back to your original entry zone. Don't chase a move that has already extended significantly from your initial entry.
+                </div>
+            </section>
+            
+            <!-- SECTION 5: RULES SUMMARY -->
+            <section id="ny-summary">
+                <h2>5. Rules Summary</h2>
+                
+                <h3>✅ Valid Entry Checklist</h3>
+                <ul>
+                    <li>☐ No major news scheduled for the day</li>
+                    <li>☐ Time is between 7:00 - 8:00 AM CT (±10 min buffer)</li>
+                    <li>☐ Valid signal appears: <strong>BIG</strong>, <strong>BUY/SELL</strong>, or <strong>ENTRY</strong></li>
+                </ul>
+                
+                <h3>🚫 Do NOT Trade When</h3>
+                <ul>
+                    <li>Any major news release scheduled (FOMC, NFP, CPI, etc.)</li>
+                    <li>Outside the 7-8 AM window</li>
+                    <li>Conflicting signals or unclear direction</li>
+                </ul>
+                
+                <h3>🔄 Re-Entry Allowed When</h3>
+                <ul>
+                    <li>Price returns to original entry zone</li>
+                    <li>Same direction still confirmed</li>
+                    <li>Use same ATM settings</li>
+                </ul>
+                
+                <div class="quick-ref" style="background: linear-gradient(135deg, #e67e22, #d35400);">
+                    <h3>⚡ Quick Reference</h3>
+                    <p><strong>Window:</strong> 7:00 - 8:00 AM CT (non-news days only)</p>
+                    <p><strong>Signals:</strong> BIG, BUY/SELL, or ENTRY</p>
+                    <p><strong>Target:</strong> 300 ticks | <strong>Stop:</strong> 200 ticks | <strong>R:R:</strong> 1:1.5</p>
+                    <p><strong>Auto-BE:</strong> At 85 ticks (+2)</p>
+                    <p><strong>Re-Entry:</strong> Allowed at original entry zone, same direction, same ATM</p>
+                    <p><strong>Remember:</strong> NO TRADING ON NEWS DAYS!</p>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <footer>
+        <p>VectorFlow Algo V1-O | Strategy Guide</p>
+        <p>Micro Gold Futures (MGC) Trading</p>
+    </footer>
+    
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            if (tabName === 'timeofday') {
+                document.querySelector('.tab-btn.strategy-1').classList.add('active');
+            } else if (tabName === 'drawdown') {
+                document.querySelector('.tab-btn.strategy-2').classList.add('active');
+            } else if (tabName === 'newyork') {
+                document.querySelector('.tab-btn.strategy-3').classList.add('active');
+            } else if (tabName === 'runner') {
+                document.querySelector('.tab-btn.strategy-4').classList.add('active');
+            }
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
